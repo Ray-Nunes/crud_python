@@ -1,27 +1,64 @@
-from services.task_services import create_task, list_task, delete_task, update_task
+import time, os
+
+from services.agendamento_services import agendar_gravacao, listar_agendamentos, atualizar_agendamento, deletar_agendamento
 
 def panel(user_auth):
     while True:
-        print(f"Bem vindo: {user_auth[1]}")
-        print("1 - Cadastrar Task \n2 - Listar Task \n3 - Remover Task \n4 - Atualizar Task \n5 - Deslogar") #buscar Task
+        print("========|TELA INICIAL|=======")
+        print(f"Bem vindo: {user_auth[1]} \n\n >Escolha uma opção<\n")
+        print("1 - Agendar gravação \n2 - Meus agendamentos \n3 - Atualizar agendamento \n4 - Remover agendamento \n5 - Deslogar") #buscar Task
 
         opcao = int(input("Digite a opção: "))
+        os.system('cls')
 
         if(opcao == 1):
-            title = input("Digite o titulo da tarefa: ")
-            create_task(user_auth[0], title)
+            data_gravacao = input("\nDigite a data de gravação: ")
+            horario_gravacao = input("Qual o horario da gravação: ")
+            qtd_videos = input("Qual a quantidade de videos: ")
+            local_gravacao = input("Qual o local da gravação: ")
+            video_aereo = input("Quantidade de videos aéreos: ")
+            agendar_gravacao(user_auth[0], data_gravacao, horario_gravacao, qtd_videos, local_gravacao, video_aereo)
+
         elif(opcao == 2):
-            tasks = list_task(user_auth[0])
-            for task in tasks:
-                print(f"Tasks {task[0]} - {task[1]}")
+            os.system('cls')
+            agendamentos = listar_agendamentos(user_auth[0])
+            for agendamento in agendamentos:
+                print(f"\nAgendamento - {agendamento[0]} \nData_gravacao: {agendamento[1]} \nHorario_gravacao: {agendamento[2]} \nQtd_videos: {agendamento[3]} \nLocal_gravacao: {agendamento[4]} \nQtd de aéreos: {agendamento[5]} \n----------------------")
+            time.sleep(2.5)
+
         elif(opcao == 3):
-            id_tasks = int(input("Qual o id da task que você quer deletar: "))
-            delete_task(user_auth[0], id_tasks)
+            print("========|SEUS AGENDAMENTOS|=======\n")
+            agendamentos = listar_agendamentos(user_auth[0])
+            for agendamento in agendamentos:
+                print(f"Agendamento - {agendamento[0]}")
+
+            agendamento_id = int(input("Qual o id do agendamento que você quer atualizar: "))
+            
+            campos = ['data_gravacao', 'horario_gravacao', 'qtd_videos', 'local_gravacao', 'video_aereo']
+            
+            print("\n Escolha uma opção para atualizar:")
+            for i, campo in enumerate(campos, 1):
+                print(f"{i} - {campo}")
+
+            opcao_atualizar = int(input("\nDigite o número da opção: "))
+
+            if(opcao_atualizar >= 1 and opcao_atualizar <= len(campos)):
+                campo = campos[opcao_atualizar - 1]
+                novo_valor = input(f"Digite um novo valor para {campo}: ")
+
+            atualizar_agendamento(user_auth[0], agendamento_id, campo, novo_valor)  
+
         elif(opcao == 4):
-            id_tasks = int(input("Qual o id da task que você quer atualizar: "))
-            novo_title = input("Digite o novo titulo da task: ")
-            update_task(user_auth[0], id_tasks, novo_title)
+            print("========|SEUS AGENDAMENTOS|=======\n")
+            agendamentos = listar_agendamentos(user_auth[0])
+            for agendamento in agendamentos:
+                print(f"Agendamento - {agendamento[0]}")
+
+            agendamento_id = int(input("Qual o id do agendamento que você quer deletar: "))
+            deletar_agendamento(user_auth[0], agendamento_id)
+        
         elif(opcao == 5):
             break
+
         else:
             print("Digite uma opção valida!")
